@@ -1,0 +1,7 @@
+openai>=1.40
+google-genai>=1.0
+numpy
+pandas
+matplotlib
+sentence-transformers
+python-dotenv
