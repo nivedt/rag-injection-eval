@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 results/smoke/
 .DS_Store
+results/gemini/
+results/gemini37/
+results/g37/
+results/openai_only_backup.jsonl
+src/*.bak

@@ -5,3 +5,4 @@ pandas
 matplotlib
 sentence-transformers
 python-dotenv
+anthropic

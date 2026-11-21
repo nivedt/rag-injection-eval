@@ -44,6 +44,23 @@ def _gemini(model, system, user):
     return resp.text or "", meta.prompt_token_count or 0, meta.candidates_token_count or 0
 
 
+def _anthropic(model, system, user):
+    if "anthropic" not in _clients:
+        import anthropic
+
+        _clients["anthropic"] = anthropic.Anthropic()
+    kwargs = {"system": system} if system else {}
+    resp = _clients["anthropic"].messages.create(
+        model=model,
+        max_tokens=512,
+        # This model rejects the temperature parameter, so it runs at default sampling.
+        messages=[{"role": "user", "content": user}],
+        **kwargs,
+    )
+    text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+    return text, resp.usage.input_tokens, resp.usage.output_tokens
+
+
 def _mock(model, system, user):
     """Offline stand-in for pipeline tests. Naively obeys any canary it sees, unless told not to."""
     if "YES or NO" in user:
@@ -56,7 +73,7 @@ def _mock(model, system, user):
     return first_doc[:300], 0, 0
 
 
-PROVIDERS = {"openai": _openai, "gemini": _gemini, "mock": _mock}
+PROVIDERS = {"openai": _openai, "gemini": _gemini, "anthropic": _anthropic, "mock": _mock}
 
 
 def call(spec, system, user, retries=5):
